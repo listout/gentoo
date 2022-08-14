@@ -1,0 +1,23 @@
+# Check for glibc prereq only if using glibc as the system's libc
+# Taken from void linux patch, please refer:
+# https://github.com/void-linux/void-packages/blob/master/srcpkgs/blender/patches/0001-musl-fixes.patch
+--- a/intern/libc_compat/libc_compat.c
++++ b/intern/libc_compat/libc_compat.c
+@@ -13,7 +13,9 @@
+ #  include <features.h>
+ #  include <math.h>
+
++#if defined(__GLIBC__)
+ #  if defined(__GLIBC_PREREQ) && __GLIBC_PREREQ(2, 31)
++#endif /* __GLIBC__ */
+
+ double __exp_finite(double x);
+ double __exp2_finite(double x);
+@@ -112,5 +114,7 @@ float __powf_finite(float x, float y)
+   return powf(x, y);
+ }
+
++#if defined(__GLIBC__)
+ #  endif /* __GLIBC_PREREQ */
++#endif /* __GLIBC__ */
+ #endif   /* __linux__ */

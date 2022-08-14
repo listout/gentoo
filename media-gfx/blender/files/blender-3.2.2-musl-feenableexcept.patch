@@ -1,0 +1,30 @@
+# THe function feenableexcept is not present non glibc systems, hence we need
+# to check if it's available in the fenv.h file. Patch is a little modified
+# version of void linux patch, please refer here:
+# https://github.com/void-linux/void-packages/blob/master/srcpkgs/blender/patches/0001-musl-fixes.patch
+--- a/source/creator/CMakeLists.txt
++++ b/source/creator/CMakeLists.txt
+@@ -1,6 +1,12 @@
+ # SPDX-License-Identifier: GPL-2.0-or-later
+ # Copyright 2006 Blender Foundation. All rights reserved.
+
++INCLUDE(CheckSymbolExists)
++CHECK_SYMBOL_EXISTS(feenableexcept "fenv.h" HAVE_FEENABLEEXCEPT)
++if (HAVE_FEENABLEEXCEPT)
++	add_compile_definitions(HAVE_FEENABLEEXCEPT)
++endif()
++
+ blender_include_dirs(
+   ../../intern/clog
+   ../../intern/glew-mx
+--- a/source/creator/creator_signals.c
++++ b/source/creator/creator_signals.c
+@@ -258,7 +258,7 @@ void main_signal_setup_fpe(void)
+    * set breakpoints on sig_handle_fpe */
+   signal(SIGFPE, sig_handle_fpe);
+
+-#    if defined(__linux__) && defined(__GNUC__)
++#    if defined(__linux__) && defined(__GNUC__) && defined(HAVE_FEENABLEEXCEPT)
+   feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
+ #    endif /* defined(__linux__) && defined(__GNUC__) */
+ #    if defined(OSX_SSE_FPE)

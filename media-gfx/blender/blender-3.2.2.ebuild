@@ -123,6 +123,13 @@ BDEPEND="
 	nls? ( sys-devel/gettext )
 "
 
+PATCHES=(
+	"${FILESDIR}"/${PN}-3.2.2-fix-glibc-prereq.patch
+	"${FILESDIR}"/${PN}-3.2.2-malloc_stats-musl.patch
+	"${FILESDIR}"/${PN}-3.2.2-musl-execinfo.patch
+	"${FILESDIR}"/${PN}-3.2.2-musl-feenableexcept.patch
+)
+
 blender_check_requirements() {
 	[[ ${MERGE_TYPE} != binary ]] && use openmp && tc-check-openmp
 
